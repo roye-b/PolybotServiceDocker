@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  mongo1:
+    image: mongo:5
+    container_name: mongo1
+    ports:
+      - "27017:27017"
+    networks:
+      - mongoCluster
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo1
+
+    volumes:
+      - ./mongo1-data:/data/db
+
+
+  mongo2:
+    image: mongo:5
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    networks:
+      - mongoCluster
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
+    volumes:
+      - ./mongo1-data:/data/db
+
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    networks:
+      - mongoCluster
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
+    volumes:
+      - ./mongo1-data:/data/db
+
+
+  yolov5:
+    container_name: yolov5
+    build:
+      context: yolo5
+
+    ports:
+      - "8081:8081"
+    environment:
+      - BUCKET_NAME=royeb
+      - MONGO_URI=mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=myReplicaSet
+      - MONGO_DB=default_db
+      - MONGO_COLLECTION=predictions
+
+  polybot:
+    container_name: polybot
+    build:
+      context: polybot
+
+    ports:
+      - "8443:8443"
+    environment:
+    - MONGO_URI=mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=myReplicaSet
+    - TELEGRAM_APP_URL=https://4069-5-29-15-109.ngrok-free.app
+    - BUCKET_NAME=royeb
+    - TELEGRAM_TOKEN=
+
+    volumes:
+      - ~/.aws:/root/.aws
+      - ./telegram_token.txt:/run/secrets/telegram_token  # Mount the token file securely
+
+
+networks:
+  mongoCluster:
+    driver: bridge
+  myapp:
+    driver: bridge
