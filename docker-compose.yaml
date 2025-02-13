@@ -23,7 +23,7 @@ services:
       - mongoCluster
     command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
     volumes:
-      - ./mongo1-data:/data/db
+      - ./mongo2-data:/data/db
 
 
   mongo3:
@@ -35,7 +35,7 @@ services:
       - mongoCluster
     command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
     volumes:
-      - ./mongo1-data:/data/db
+      - ./mongo3-data:/data/db
 
 
   yolov5:
