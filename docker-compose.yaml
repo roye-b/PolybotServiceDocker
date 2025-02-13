@@ -40,9 +40,7 @@ services:
 
   yolov5:
     container_name: yolov5
-    build:
-      context: yolo5
-
+    image: ${YOLO5_IMG_NAME}
     ports:
       - "8081:8081"
     environment:
@@ -53,14 +51,12 @@ services:
 
   polybot:
     container_name: polybot
-    build:
-      context: polybot
-
+    image: ${POLYBOT_IMG_NAME}
     ports:
       - "8443:8443"
     environment:
     - MONGO_URI=mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=myReplicaSet
-    - TELEGRAM_APP_URL=https://4069-5-29-15-109.ngrok-free.app
+    - TELEGRAM_APP_URL=https://b28e-51-20-121-246.ngrok-free.app
     - BUCKET_NAME=royeb
     - TELEGRAM_TOKEN=
 
